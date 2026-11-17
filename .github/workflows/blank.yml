@@ -1,0 +1,16 @@
+name: Build iOS App
+
+on:
+  push:
+  workflow_dispatch: # Это добавит кнопку "Run workflow", чтобы запускать сборку вручную
+
+jobs:
+  build:
+    runs-on: macos-latest # Запускаем виртуальный Mac
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Say Hello
+        run: echo "Привет! Mac запустился и готов к работе."
