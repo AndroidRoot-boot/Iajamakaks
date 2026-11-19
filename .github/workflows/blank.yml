@@ -1,4 +1,4 @@
-name: Build Real iOS App
+name: Build iOS App from Template
 
 on:
   push:
@@ -9,22 +9,24 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout our repo
         uses: actions/checkout@v4
 
-      - name: Build iOS app (без подписи)
+      - name: Download a basic iOS project template
         run: |
-          echo "Начинаем сборку iOS приложения..."
-          xcodebuild -version
+          # Скачиваем готовый Xcode проект с сайта Apple (или другого надежного источника)
+          # Здесь мы используем простейший проект Hello World
+          git clone https://github.com/ricobeck/Kitura-Swift-Server.git test_project
+          cd test_project
+
+      - name: Build the iOS app
+        run: |
+          # Запускаем компиляцию Xcode
+          cd test_project
+          # Указываем, что собираем для симулятора или устройства
+          xcodebuild -scheme HelloWorld -sdk iphoneos -configuration Release -derivedDataPath build CODE_SIGNING_ALLOWED=NO
           
-          # Так как у нас нет файла .xcodeproj, мы используем swiftc 
-          # для компиляции простого бинарника под iOS
-          xcrun --sdk iphoneos swiftc -parse-as-library -emit-executable -o HelloApp main.swift
-          
-          echo "Сборка завершена!"
-          
-      - name: Сохраняем результат
-        uses: actions/upload-artifact@v4
-        with:
-          name: MyFirstiOSApp
-          path: HelloApp
+      - name: Show build result
+        run: |
+          echo "Сборка завершена! Ищем файл приложения..."
+          find test_project/build -name "*.app" -type d
