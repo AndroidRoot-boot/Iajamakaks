@@ -1,35 +1,5 @@
-name: Build iOS App (Auto-Detect)
-
-on:
-  push:
-  workflow_dispatch:
-
-jobs:
-  build:
-    runs-on: macos-latest
-
-    steps:
-      - name: Checkout our repo
-        uses: actions/checkout@v4
-
-      - name: Download project
-        run: |
-          git clone https://github.com/ioscreator/ioscreator.git my_project
-          ls -la my_project
-
-      - name: Build the app (Auto-find)
-        run: |
-          cd my_project
-          PROJECT_FILE=$(find . -name "*.xcodeproj" | head -n 1)
-          echo "Найден проект: $PROJECT_FILE"
-          
-          SCHEME_NAME=$(basename "$PROJECT_FILE" .xcodeproj)
-          echo "Пробуем собрать схему: $SCHEME_NAME"
-          
-          xcodebuild -project "$PROJECT_FILE" -scheme "$SCHEME_NAME" -sdk iphoneos -configuration Release CODE_SIGNING_ALLOWED=NO
-
-      - name: Save Build Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: Built-iOS-App
-          path: my_project/**/*.app
+- name: Save Build Artifact
+  uses: actions/upload-artifact@v4
+  with:
+    name: Built-iOS-App
+    path: /Users/runner/Library/Developer/Xcode/DerivedData/**/Build/Products/Release-iphoneos/*.app
