@@ -1,5 +1,34 @@
-- name: Save Build Artifact
-  uses: actions/upload-artifact@v4
-  with:
-    name: Built-iOS-App
-    path: /Users/runner/Library/Developer/Xcode/DerivedData/**/Build/Products/Release-iphoneos/*.app
+name: Build iOS App (Final)
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout our repo
+        uses: actions/checkout@v4
+
+      - name: Download project
+        run: |
+          git clone https://github.com/ioscreator/ioscreator.git my_project
+          
+      - name: Build and Copy App
+        run: |
+          cd my_project
+          PROJECT_FILE=$(find . -name "*.xcodeproj" | head -n 1)
+          SCHEME_NAME=$(basename "$PROJECT_FILE" .xcodeproj)
+          xcodebuild -project "$PROJECT_FILE" -scheme "$SCHEME_NAME" -sdk iphoneos -configuration Release CODE_SIGNING_ALLOWED=NO
+          APP_PATH=$(find /Users/runner/Library/Developer/Xcode/DerivedData -name "*.app" -type d | head -n 1)
+          echo "Найден файл: $APP_PATH"
+          mkdir -p output
+          cp -R "$APP_PATH" output/
+
+      - name: Save Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Built-iOS-App
+          path: my_project/output/*.app
