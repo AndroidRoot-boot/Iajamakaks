@@ -1,16 +1,30 @@
-name: Build iOS App
+name: Build Real iOS App
 
 on:
   push:
-  workflow_dispatch: # Это добавит кнопку "Run workflow", чтобы запускать сборку вручную
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: macos-latest # Запускаем виртуальный Mac
+    runs-on: macos-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Say Hello
-        run: echo "Привет! Mac запустился и готов к работе."
+      - name: Build iOS app (без подписи)
+        run: |
+          echo "Начинаем сборку iOS приложения..."
+          xcodebuild -version
+          
+          # Так как у нас нет файла .xcodeproj, мы используем swiftc 
+          # для компиляции простого бинарника под iOS
+          xcrun --sdk iphoneos swiftc -parse-as-library -emit-executable -o HelloApp main.swift
+          
+          echo "Сборка завершена!"
+          
+      - name: Сохраняем результат
+        uses: actions/upload-artifact@v4
+        with:
+          name: MyFirstiOSApp
+          path: HelloApp
