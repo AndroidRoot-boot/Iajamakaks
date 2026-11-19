@@ -1,4 +1,4 @@
-name: Build iOS App (Working)
+name: Build iOS App (Auto-Detect)
 
 on:
   push:
@@ -12,19 +12,19 @@ jobs:
       - name: Checkout our repo
         uses: actions/checkout@v4
 
-      - name: Download a basic iOS project template
+      - name: Download project
         run: |
-          # Скачиваем проверенный тестовый проект
           git clone https://github.com/ioscreator/ioscreator.git my_project
-          cd my_project
+          ls -la my_project # Показываем, какие папки скачались
 
-      - name: Build the iOS app
+      - name: Build the app (Auto-find)
         run: |
           cd my_project
-          # Собираем конкретный проект, который есть в этом репозитории
-          xcodebuild -project HelloWorld/HelloWorld.xcodeproj -scheme HelloWorld -sdk iphoneos -configuration Release CODE_SIGNING_ALLOWED=NO
+          # Ищем любой файл .xcodeproj и запускаем сборку
+          PROJECT_FILE=$(find . -name "*.xcodeproj" | head -n 1)
+          echo "Найден проект: $PROJECT_FILE"
           
-      - name: Show build result
-        run: |
-          echo "Сборка завершена! Ищем файл приложения..."
-          find . -name "*.app" -type d
+          SCHEME_NAME=$(basename "$PROJECT_FILE" .xcodeproj)
+          echo "Пробуем собрать схему: $SCHEME_NAME"
+          
+          xcodebuild -project "$PROJECT_FILE" -scheme "$SCHEME_NAME" -sdk iphoneos -configuration Release CODE_SIGNING_ALLOWED=NO
