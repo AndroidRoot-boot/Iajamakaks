@@ -1,4 +1,4 @@
-name: Build iOS App from Template
+name: Build iOS App (Working)
 
 on:
   push:
@@ -14,19 +14,17 @@ jobs:
 
       - name: Download a basic iOS project template
         run: |
-          # Скачиваем готовый Xcode проект с сайта Apple (или другого надежного источника)
-          # Здесь мы используем простейший проект Hello World
-          git clone https://github.com/ricobeck/Kitura-Swift-Server.git test_project
-          cd test_project
+          # Скачиваем проверенный тестовый проект
+          git clone https://github.com/ioscreator/ioscreator.git my_project
+          cd my_project
 
       - name: Build the iOS app
         run: |
-          # Запускаем компиляцию Xcode
-          cd test_project
-          # Указываем, что собираем для симулятора или устройства
-          xcodebuild -scheme HelloWorld -sdk iphoneos -configuration Release -derivedDataPath build CODE_SIGNING_ALLOWED=NO
+          cd my_project
+          # Собираем конкретный проект, который есть в этом репозитории
+          xcodebuild -project HelloWorld/HelloWorld.xcodeproj -scheme HelloWorld -sdk iphoneos -configuration Release CODE_SIGNING_ALLOWED=NO
           
       - name: Show build result
         run: |
           echo "Сборка завершена! Ищем файл приложения..."
-          find test_project/build -name "*.app" -type d
+          find . -name "*.app" -type d
